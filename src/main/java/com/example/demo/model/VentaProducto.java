@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -12,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 @IdClass(VentaProductoId.class)
-public class VentaProducto {
+public class VentaProducto implements Serializable{
 	
 	@Id
 	@ManyToOne

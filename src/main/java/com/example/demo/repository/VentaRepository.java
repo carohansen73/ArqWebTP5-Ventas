@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.model.Venta;
 
 import dto.FacturacionPorClienteDTO;
-import dto.ReporteVentaDiaDTO;
+import dto.VentaDTO;
 
 @Repository
 public interface VentaRepository extends JpaRepository<Venta,Integer>{
@@ -16,12 +16,13 @@ public interface VentaRepository extends JpaRepository<Venta,Integer>{
 			+ "FROM Venta v "
 			+ "JOIN VentaProducto vp "
 			+ "ON v.id = vp.venta.id "
-			+ "GROUP BY v.fecha,vp.id_producto")
+			+ "GROUP BY v.fecha,vp.id_producto "
+			+ "ORDER BY v.fecha")
 	
-	public Iterable<ReporteVentaDiaDTO> getReporteVentas();
+	public Iterable<VentaDTO> getReporteVentas();
 
 	
-	@Query("SELECT new dto.FacturacionPorClienteDTO(v.id_cliente,SUM(vp.cantidad*vp.precio)) "
+	@Query("SELECT new dto.FacturacionPorClienteDTO(v.id_cliente, SUM(vp.cantidad*vp.precio)) "
 			+ "FROM Venta v "
 			+ "JOIN VentaProducto vp "
 			+ "ON v.id = vp.venta.id "

@@ -37,4 +37,9 @@ public class VentaProductoId implements Serializable{
         return Objects.equals(venta, that.venta) && 
                Objects.equals(id_producto, that.id_producto);
     }
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(venta, id_producto);
+    }
 }

@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ public class Venta implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id_venta")
 	private Integer id;
 	
 	@Column    
@@ -26,8 +29,8 @@ public class Venta implements Serializable{
 	@Column
 	private Integer id_cliente;
 	
-	@OneToMany(mappedBy= "venta")
-	private List<VentaProducto> ventaProducto;
+	@OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VentaProducto> ventaProductos;
 	
 	public Venta() {
 		super();
