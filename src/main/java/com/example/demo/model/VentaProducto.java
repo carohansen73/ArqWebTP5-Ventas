@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-
 @Entity
+@IdClass(VentaProductoId.class)
 public class VentaProducto {
 	
 	@Id
@@ -19,6 +20,7 @@ public class VentaProducto {
 	@JsonBackReference
 	private Venta venta;
 	
+	@Id
 	@Column
 	private Integer id_producto;
 	
@@ -40,6 +42,9 @@ public class VentaProducto {
 		this.precio=precio;
 	}
 	
+	public double getTotal() {
+		return this.getPrecio()*this.getCantidad();
+	}
 	public Venta getVenta() {
 		return venta;
 	}

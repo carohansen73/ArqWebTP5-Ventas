@@ -1,18 +1,21 @@
 package com.example.demo.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
-public class Venta {
+public class Venta implements Serializable{
 	
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	@Column    
@@ -22,6 +25,9 @@ public class Venta {
 	//private Cliente cliente;
 	@Column
 	private Integer id_cliente;
+	
+	@OneToMany(mappedBy= "venta")
+	private List<VentaProducto> ventaProducto;
 	
 	public Venta() {
 		super();
