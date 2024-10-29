@@ -2,8 +2,12 @@ package com.example.demo.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import dto.PostVentaDTO;
+import dto.VentaProductoDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +45,17 @@ public class Venta implements Serializable{
 		this.id_cliente = id_cliente;
 	}
 	
+	public Venta(PostVentaDTO dto) {
+		this(dto.getFecha(),dto.getId_cliente());
+		this.ventaProductos = new ArrayList<VentaProducto>();
+		Iterator<VentaProductoDTO> it = dto.iteradorVentaProductos();
+		while(it.hasNext()) {
+			VentaProductoDTO vpDTO = it.next();
+			System.out.println(vpDTO.getPrecio());
+			this.ventaProductos.add(new VentaProducto(this,vpDTO));
+		}
+	}
+	
 
 	public Integer getId() {
 		return id;
@@ -64,14 +79,7 @@ public class Venta implements Serializable{
 
 	public void setId_cliente(Integer id_cliente) {
 		this.id_cliente = id_cliente;
-	}
-
-	@Override
-	public String toString() {
-		return "" + ventaProductos.iterator().next().getCantidad();
-	}
-	
-	
+	}	
 	
 
 }

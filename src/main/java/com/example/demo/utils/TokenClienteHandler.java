@@ -18,6 +18,7 @@ public class TokenClienteHandler {
 	private  RestTemplate restTemplate;
 	
 	public String getToken() {
+		//TODO hardcodeado
 		if(token == null) {
 			String body = "{\"username\":\"admin\",\"password\":\"admin\"}";
 			RequestEntity request = RequestEntity
@@ -29,7 +30,6 @@ public class TokenClienteHandler {
 			 new ParameterizedTypeReference<HashMap<String,String>>() {};
 			ResponseEntity<HashMap<String,String>> response = restTemplate.exchange(request, myBean);
 			token = response.getBody().get("token");
-			System.out.println("token:" + token);	
 		}
 		return token;
 	}

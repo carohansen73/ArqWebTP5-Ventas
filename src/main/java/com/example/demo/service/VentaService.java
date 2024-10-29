@@ -22,6 +22,7 @@ import com.example.demo.utils.PatcherVenta;
 import com.example.demo.utils.TokenClienteHandler;
 
 import dto.FacturacionPorClienteDTO;
+import dto.PostVentaDTO;
 import dto.ReporteVentasPorDiaDTO;
 import dto.VentaDTO;
 
@@ -54,9 +55,10 @@ public class VentaService {
 		return ventaRepository.findAll();
 	}
 	
-	public ResponseEntity<String> save(Venta venta) {
+	public ResponseEntity<String> save(PostVentaDTO ventaDTO) {
 		
-		if(this.checkClienteValido(venta.getId_cliente())){
+		if(this.checkClienteValido(ventaDTO.getId_cliente())){
+			Venta venta = new Venta(ventaDTO);
 			ventaRepository.save(venta);
 			return new ResponseEntity<String>(HttpStatus.CREATED);
 		}else{
@@ -69,7 +71,6 @@ public class VentaService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(this.tokenClienteHandler.getToken());
 		HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-		System.out.println(clienteApiUri + clienteId);
 		try {
 			this.restTemplate.exchange(clienteApiUri + clienteId,HttpMethod.GET, httpEntity,Object.class).getStatusCode().is2xxSuccessful();;
 			return true;

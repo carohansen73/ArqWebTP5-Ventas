@@ -18,6 +18,7 @@ import com.example.demo.model.Venta;
 import com.example.demo.service.VentaService;
 
 import dto.FacturacionPorClienteDTO;
+import dto.PostVentaDTO;
 import dto.VentaDTO;
 
 @RestController
@@ -42,8 +43,7 @@ public class VentaController {
 	}
 	
 	@PostMapping("/")
-	public ResponseEntity<String> save(@RequestBody Venta venta) {
-		System.out.println(venta.toString());
+	public ResponseEntity<String> save(@RequestBody PostVentaDTO venta) {
 		return ventaService.save(venta);
 	}
 	
