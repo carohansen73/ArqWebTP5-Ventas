@@ -16,6 +16,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.model.Venta;
+import com.example.demo.model.VentaProducto;
+import com.example.demo.model.VentaProductoId;
+import com.example.demo.repository.VentaProductoRepository;
 import com.example.demo.repository.VentaRepository;
 import com.example.demo.utils.GenericObjectPatcher;
 import com.example.demo.utils.PatcherVenta;
@@ -25,19 +28,24 @@ import dto.FacturacionPorClienteDTO;
 import dto.PostVentaDTO;
 import dto.ReporteVentasPorDiaDTO;
 import dto.VentaDTO;
+import dto.VentaProductoDTO;
 
 @Service
 public class VentaService {
 	@Autowired
 	private final TokenClienteHandler tokenClienteHandler;
 	public static final String clienteApiUri = "http://localhost:8081/clientes/";
+	public static final String productoApiUri = "http://localhost:8082/productos/";
 	@Autowired
 	private final VentaRepository ventaRepository;
 	@Autowired
 	private final RestTemplate restTemplate; 
+	@Autowired
+	private final VentaProductoRepository ventaProductoRepository;
 	
-	public VentaService(VentaRepository ventaRepository,RestTemplate restTemplate,TokenClienteHandler tokenClienteHandler) {
+	public VentaService(VentaRepository ventaRepository,RestTemplate restTemplate,TokenClienteHandler tokenClienteHandler,VentaProductoRepository  ventaProductoRepository) {
 		this.ventaRepository = ventaRepository;
+		this.ventaProductoRepository = ventaProductoRepository;
 		this.restTemplate = restTemplate;
 		this.tokenClienteHandler = tokenClienteHandler;
 	}
@@ -83,7 +91,6 @@ public class VentaService {
 	
 	
 	public ResponseEntity<Iterable<FacturacionPorClienteDTO>> facturacionPorCliente() {
-		// TODO Auto-generated method stub
 		return ResponseEntity.ok(ventaRepository.facturacionPorCliente());
 	}
 
@@ -111,5 +118,52 @@ public class VentaService {
 			return new ResponseEntity<String>("id Invalido",HttpStatus.NOT_FOUND);
 		}
 	}
-	
+
+	public ResponseEntity<?> patchVentaProducto(Integer idVenta, Integer idProducto, VentaProducto ventaProductoIncompleta) {
+		if((ventaProductoIncompleta.getId_producto()!=null)) {
+			return new ResponseEntity<String>("No se puede editar id",HttpStatus.BAD_REQUEST);
+		}
+		
+		if(this.checkProductoValido(ventaProductoIncompleta.getId_producto())) {
+				return new ResponseEntity<String>("idProducto Invalido",HttpStatus.BAD_REQUEST);
+		}
+		try {
+			VentaProducto vp = ventaProductoRepository.findById(new VentaProductoId(idVenta,idProducto)).orElseThrow();
+			GenericObjectPatcher.patch(ventaProductoIncompleta, vp);
+			ventaProductoRepository.save(vp);
+			return new ResponseEntity<String>(HttpStatus.OK);
+		}catch(NoSuchElementException e) {
+			return new ResponseEntity<String>("id Invalido",HttpStatus.NOT_FOUND);
+		}
+	}
+
+	private boolean checkProductoValido(Integer id_producto) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(this.tokenClienteHandler.getToken());
+		HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+		try {
+			this.restTemplate.exchange(productoApiUri + id_producto,HttpMethod.GET, httpEntity,Object.class).getStatusCode().is2xxSuccessful();;
+			return true;
+		}catch(HttpClientErrorException e) {
+			return false;
+		}
+	}
+
+	public ResponseEntity<?> addVentaProducto(Integer idVenta, VentaProductoDTO ventaProducto) {
+		if(this.checkProductoValido(ventaProducto.getId_producto())) {
+			return new ResponseEntity<String>("idProducto Invalido",HttpStatus.BAD_REQUEST);
+		}
+		if(!ventaRepository.existsById(idVenta)) {
+			return new ResponseEntity<String>("idProducto Invalido",HttpStatus.NOT_FOUND);
+		}		
+		ventaProductoRepository.addVentaProducto(idVenta,ventaProducto.getId_producto(),ventaProducto.getCantidad(),ventaProducto.getPrecio());
+		return new ResponseEntity<String>(HttpStatus.CREATED);
+	}
+
+	public ResponseEntity<?> deleteVentaProducto(Integer idVenta, Integer idProducto) {
+		VentaProductoId id = new VentaProductoId(idVenta,idProducto);
+		ventaProductoRepository.deleteById(id);
+		return ResponseEntity.ok(null);
+	}
+		
 }

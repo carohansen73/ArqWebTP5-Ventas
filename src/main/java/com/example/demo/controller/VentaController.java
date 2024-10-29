@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Venta;
+import com.example.demo.model.VentaProducto;
 import com.example.demo.service.VentaService;
 
 import dto.FacturacionPorClienteDTO;
 import dto.PostVentaDTO;
 import dto.VentaDTO;
+import dto.VentaProductoDTO;
 
 @RestController
 @RequestMapping("ventas")
@@ -65,5 +67,19 @@ public class VentaController {
 	@GetMapping("/reporte")
 	public ResponseEntity<Iterable<VentaDTO>> getReporte(){
 		return ventaService.getReporteVentas();
+	}
+	@PostMapping("/{idVenta}/productos/")
+	public ResponseEntity<?> addVentaProducto(@RequestBody VentaProductoDTO ventaProducto,@PathVariable Integer idVenta){
+		return ventaService.addVentaProducto(idVenta,ventaProducto);
+	}
+	
+	@PatchMapping("/{idVenta}/productos/{idProducto}")
+	public ResponseEntity<?> patchVentaProducto(@PathVariable Integer idVenta, @PathVariable Integer idProducto,@RequestBody VentaProducto ventaProducto){
+		return ventaService.patchVentaProducto(idVenta,idProducto,ventaProducto);
+	}
+	
+	@DeleteMapping("/{idVenta}/productos/{idProducto}")
+	public ResponseEntity<?> deleteVentaProducto(@PathVariable Integer idVenta,@PathVariable Integer idProducto){
+		return ventaService.deleteVentaProducto(idVenta,idProducto);
 	}
 }
