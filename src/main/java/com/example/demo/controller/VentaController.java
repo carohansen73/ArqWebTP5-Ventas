@@ -82,4 +82,9 @@ public class VentaController {
 	public ResponseEntity<?> deleteVentaProducto(@PathVariable Integer idVenta,@PathVariable Integer idProducto){
 		return ventaService.deleteVentaProducto(idVenta,idProducto);
 	}
+	
+	@GetMapping("/masVendido")
+	public ResponseEntity<Integer> masVendido(){
+		return ventaService.masVendido();
+	}
 }

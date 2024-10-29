@@ -165,5 +165,9 @@ public class VentaService {
 		ventaProductoRepository.deleteById(id);
 		return ResponseEntity.ok(null);
 	}
+
+	public ResponseEntity<Integer> masVendido() {
+;		return new ResponseEntity<Integer>(ventaRepository.masVendido().get(0),HttpStatus.OK);
+	}
 		
 }

@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -37,5 +39,11 @@ public interface VentaRepository extends JpaRepository<Venta,Integer>{
 			+ "ON v.id = vp.venta.id "
 			+ "GROUP BY v.id_cliente")
 	public Iterable<FacturacionPorClienteDTO> facturacionPorCliente();
+
+	@Query("SELECT vp.id_producto "
+			+ "FROM VentaProducto vp "
+			+ "GROUP BY vp.id_producto "
+			+ "ORDER BY SUM(vp.cantidad) DESC")
+	public List<Integer> masVendido();
 	
 }
