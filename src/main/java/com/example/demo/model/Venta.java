@@ -65,6 +65,12 @@ public class Venta implements Serializable{
 	public void setId_cliente(Integer id_cliente) {
 		this.id_cliente = id_cliente;
 	}
+
+	@Override
+	public String toString() {
+		return "" + ventaProductos.iterator().next().getCantidad();
+	}
+	
 	
 	
 

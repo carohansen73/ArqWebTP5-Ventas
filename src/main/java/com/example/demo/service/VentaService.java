@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.model.Venta;
 import com.example.demo.repository.VentaRepository;
+import com.example.demo.utils.GenericObjectPatcher;
 import com.example.demo.utils.PatcherVenta;
 import com.example.demo.utils.TokenClienteHandler;
 
@@ -100,15 +101,14 @@ public class VentaService {
 				return new ResponseEntity<String>("idCliente Invalido",HttpStatus.BAD_REQUEST);
 		}
 		
-		Venta venta;
 		try {
-			venta = ventaRepository.findById(id).orElseThrow();
+			Venta venta = ventaRepository.findById(id).orElseThrow();
+			GenericObjectPatcher.patch(ventaIncompleta, venta);
+			ventaRepository.save(venta);
+			return new ResponseEntity<String>(HttpStatus.OK);
 		}catch(NoSuchElementException e) {
 			return new ResponseEntity<String>("id Invalido",HttpStatus.NOT_FOUND);
 		}
-		PatcherVenta.patchVenta(ventaIncompleta, venta);
-		ventaRepository.save(venta);
-		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 	
 }

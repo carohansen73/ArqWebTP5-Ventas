@@ -43,6 +43,7 @@ public class VentaController {
 	
 	@PostMapping("/")
 	public ResponseEntity<String> save(@RequestBody Venta venta) {
+		System.out.println(venta.toString());
 		return ventaService.save(venta);
 	}
 	
