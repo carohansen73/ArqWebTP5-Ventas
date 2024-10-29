@@ -18,7 +18,6 @@ import com.example.demo.model.Venta;
 import com.example.demo.service.VentaService;
 
 import dto.FacturacionPorClienteDTO;
-import dto.ReporteVentasPorDiaDTO;
 import dto.VentaDTO;
 
 @RestController
@@ -58,8 +57,8 @@ public class VentaController {
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> patch(@RequestBody Map<String,Object> atributos,@PathVariable Integer id){
-		return ventaService.patch(id,atributos);
+	public ResponseEntity<String> patch(@RequestBody Venta venta,@PathVariable Integer id){
+		return ventaService.patch(id,venta);
 	}
 	
 	@GetMapping("/reporte")

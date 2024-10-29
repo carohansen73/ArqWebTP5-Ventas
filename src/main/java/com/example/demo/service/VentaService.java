@@ -19,8 +19,6 @@ import dto.VentaDTO;
 
 @Service
 public class VentaService {
-	@Autowired
-	private PatcherVenta patcher;
 	
 	public static final String clienteApiUri = "http://localhost:8080/clientes/";
 	@Autowired
@@ -36,6 +34,11 @@ public class VentaService {
 	public ResponseEntity<Iterable<VentaDTO>> getReporteVentas(){
 		return ResponseEntity.ok(ventaRepository.getReporteVentas());
 	}
+	/*
+	public ResponseEntity<Iterable<ReporteVentasPorDiaDTO>> getReporteVentasDetallado(){
+		restTemplate.getForEntity(null, ClienteDTO.class)
+		return null;
+	}*/
 
 	public Iterable<Venta> getAll(){
 		return ventaRepository.findAll();
@@ -66,17 +69,21 @@ public class VentaService {
 		return ResponseEntity.ok(null);
 	}
 
-	public ResponseEntity<String> patch(Integer id, Map<String, Object> atributos) {
-		if(atributos.containsKey("id_cliente") && !this.checkClienteValido(id)) {
-			return new ResponseEntity<String>("idCliente Invalido",HttpStatus.BAD_REQUEST);
+	public ResponseEntity<String> patch(Integer id, Venta ventaIncompleta) {
+		//tries to edit id
+		if((ventaIncompleta.getId()!=null)) {
+			return new ResponseEntity<String>("No se puede editar id",HttpStatus.BAD_REQUEST);
 		}
+		if((ventaIncompleta.getId_cliente() !=null) && !this.checkClienteValido(id)) {
+				return new ResponseEntity<String>("idCliente Invalido",HttpStatus.BAD_REQUEST);
+			}
 		Venta venta;
 		try {
 			venta = ventaRepository.findById(id).orElseThrow();
 		}catch(NoSuchElementException e) {
 			return new ResponseEntity<String>("id Invalido",HttpStatus.NOT_FOUND);
 		}
-		PatcherVenta.patchVenta(atributos, venta);
+		PatcherVenta.patchVenta(ventaIncompleta, venta);
 		ventaRepository.save(venta);
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}

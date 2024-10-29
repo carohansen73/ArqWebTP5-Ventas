@@ -9,18 +9,27 @@ import com.example.demo.model.Venta;
 import dto.FacturacionPorClienteDTO;
 import dto.VentaDTO;
 
+//import dto.ReporteVentasPorDiaDTO;
+
 @Repository
 public interface VentaRepository extends JpaRepository<Venta,Integer>{
 
+	@Query("SELECT new dto.VentaDTO(v.id,v.fecha,SUM(vp.cantidad*vp.precio)) "
+			+ "FROM Venta v "
+			+ "JOIN VentaProducto vp "
+			+ "ON v.id = vp.venta.id "
+			+ "GROUP BY v.fecha,vp.id_producto")
+	
+	public Iterable<VentaDTO> getReporteVentas();
+	
+	/*
 	@Query("SELECT new dto.ReporteVentaDiaDTO(v.fecha,vp.id_producto,SUM(vp.cantidad),SUM(vp.cantidad*vp.precio)) "
 			+ "FROM Venta v "
 			+ "JOIN VentaProducto vp "
 			+ "ON v.id = vp.venta.id "
-			+ "GROUP BY v.fecha,vp.id_producto "
-			+ "ORDER BY v.fecha")
-	
-	public Iterable<VentaDTO> getReporteVentas();
-
+			+ "GROUP BY v.fecha,vp.id_producto")
+	public Iterable<ReporteVentasPorDiaDTO> gerReporteVentasDetallado();
+	*/
 	
 	@Query("SELECT new dto.FacturacionPorClienteDTO(v.id_cliente, SUM(vp.cantidad*vp.precio)) "
 			+ "FROM Venta v "
