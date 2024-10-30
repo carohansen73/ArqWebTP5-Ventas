@@ -87,4 +87,9 @@ public class VentaController {
 	public ResponseEntity<Integer> masVendido(){
 		return ventaService.masVendido();
 	}
+	//TODO
+	@GetMapping("/{idVenta}/productos/")
+	public ResponseEntity<?> getProductosVenta(Integer idVenta){
+		return ventaService.getProductosVenta(idVenta);
+	}
 }

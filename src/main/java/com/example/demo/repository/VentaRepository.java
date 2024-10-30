@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.Venta;
+import com.example.demo.model.VentaProducto;
 
 import dto.FacturacionPorClienteDTO;
 import dto.VentaDTO;

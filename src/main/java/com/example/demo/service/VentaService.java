@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.net.ConnectException;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -35,7 +36,7 @@ public class VentaService {
 	@Autowired
 	private final TokenClienteHandler tokenClienteHandler;
 	public static final String clienteApiUri = "http://localhost:8081/clientes/";
-	public static final String productoApiUri = "http://localhost:8082/productos/";
+	public static final String productoApiUri = "http://localhost:8089/productos/";
 	@Autowired
 	private final VentaRepository ventaRepository;
 	@Autowired
@@ -138,11 +139,12 @@ public class VentaService {
 	}
 
 	private boolean checkProductoValido(Integer id_producto) {
-		HttpHeaders headers = new HttpHeaders();
+		/*HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(this.tokenClienteHandler.getToken());
-		HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+		HttpEntity<String> httpEntity = new HttpEntity<>(headers);*/
 		try {
-			this.restTemplate.exchange(productoApiUri + id_producto,HttpMethod.GET, httpEntity,Object.class).getStatusCode().is2xxSuccessful();;
+			this.restTemplate.getForEntity(productoApiUri, Object.class).getStatusCode().is2xxSuccessful();
+			//this.restTemplate.exchange(productoApiUri + id_producto,HttpMethod.GET, httpEntity,Object.class).getStatusCode().is2xxSuccessful();
 			return true;
 		}catch(HttpClientErrorException e) {
 			return false;
@@ -150,14 +152,19 @@ public class VentaService {
 	}
 
 	public ResponseEntity<?> addVentaProducto(Integer idVenta, VentaProductoDTO ventaProducto) {
-		if(this.checkProductoValido(ventaProducto.getId_producto())) {
+		if(!this.checkProductoValido(ventaProducto.getId_producto())) {
 			return new ResponseEntity<String>("idProducto Invalido",HttpStatus.BAD_REQUEST);
 		}
-		if(!ventaRepository.existsById(idVenta)) {
-			return new ResponseEntity<String>("idProducto Invalido",HttpStatus.NOT_FOUND);
-		}		
-		ventaProductoRepository.addVentaProducto(idVenta,ventaProducto.getId_producto(),ventaProducto.getCantidad(),ventaProducto.getPrecio());
-		return new ResponseEntity<String>(HttpStatus.CREATED);
+		Optional<Venta> venta = ventaRepository.findById(idVenta);
+		try{
+			VentaProducto vp = new VentaProducto(venta.orElseThrow(),ventaProducto);
+			ventaProductoRepository.save(vp);
+			return new ResponseEntity<String>(HttpStatus.CREATED);
+			
+		}catch(NoSuchElementException e) {
+			return new ResponseEntity<String>("La venta no existe",HttpStatus.NOT_FOUND);
+		}
+		
 	}
 
 	public ResponseEntity<?> deleteVentaProducto(Integer idVenta, Integer idProducto) {
@@ -168,6 +175,11 @@ public class VentaService {
 
 	public ResponseEntity<Integer> masVendido() {
 ;		return new ResponseEntity<Integer>(ventaRepository.masVendido().get(0),HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> getProductosVenta(Integer idVenta) {
+		// TODO Auto-generated method stub
+		return ResponseEntity.ok(ventaProductoRepository.productosVentas(idVenta));
 	}
 		
 }
