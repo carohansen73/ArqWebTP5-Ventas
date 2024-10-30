@@ -30,6 +30,7 @@ import dto.PostVentaDTO;
 import dto.ReporteVentasPorDiaDTO;
 import dto.VentaDTO;
 import dto.VentaProductoDTO;
+import dto.VentaProductoSinIdDTO;
 
 @Service
 public class VentaService {
@@ -120,17 +121,15 @@ public class VentaService {
 		}
 	}
 
-	public ResponseEntity<?> patchVentaProducto(Integer idVenta, Integer idProducto, VentaProducto ventaProductoIncompleta) {
-		if((ventaProductoIncompleta.getId_producto()!=null)) {
-			return new ResponseEntity<String>("No se puede editar id",HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<?> patchVentaProducto(Integer idVenta, Integer idProducto, VentaProductoSinIdDTO ventaProductoDTO) {
 		
-		if(this.checkProductoValido(ventaProductoIncompleta.getId_producto())) {
+		if(this.checkProductoValido(idProducto)) {
 				return new ResponseEntity<String>("idProducto Invalido",HttpStatus.BAD_REQUEST);
 		}
 		try {
+			VentaProducto vpIncompleto = new VentaProducto(null,idProducto,ventaProductoDTO);
 			VentaProducto vp = ventaProductoRepository.findById(new VentaProductoId(idVenta,idProducto)).orElseThrow();
-			GenericObjectPatcher.patch(ventaProductoIncompleta, vp);
+			GenericObjectPatcher.patch(vpIncompleto, vp);
 			ventaProductoRepository.save(vp);
 			return new ResponseEntity<String>(HttpStatus.OK);
 		}catch(NoSuchElementException e) {

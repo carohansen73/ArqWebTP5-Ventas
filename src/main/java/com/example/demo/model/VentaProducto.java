@@ -6,6 +6,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import dto.VentaProductoDTO;
+import dto.VentaProductoSinIdDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -48,6 +49,13 @@ public class VentaProducto implements Serializable{
 	public VentaProducto(Venta venta, VentaProductoDTO vpDTO) {
 		this.venta = venta;
 		this.id_producto=vpDTO.getId_producto();
+		this.cantidad=vpDTO.getCantidad();
+		this.precio=vpDTO.getPrecio();
+	}
+	
+	public VentaProducto(Venta venta,Integer idProducto, VentaProductoSinIdDTO vpDTO) {
+		this.venta = venta;
+		this.id_producto=idProducto;
 		this.cantidad=vpDTO.getCantidad();
 		this.precio=vpDTO.getPrecio();
 	}
